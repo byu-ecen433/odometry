@@ -17,7 +17,7 @@ ARG BASE_TAG=${DISTRO}-${ARCH}
 ARG LAUNCHER=default
 
 # define base image
-FROM ${DOCKER_REGISTRY}/${BASE_ORGANIZATION}/${BASE_REPOSITORY}:${BASE_TAG} as base
+FROM ${DOCKER_REGISTRY}/${BASE_ORGANIZATION}/${BASE_REPOSITORY}:${BASE_TAG} AS base
 
 # recall all arguments
 ARG ARCH
@@ -118,5 +118,10 @@ LABEL \
     org.duckietown.label.base.organization="${BASE_ORGANIZATION}" \
     org.duckietown.label.base.repository="${BASE_REPOSITORY}" \
     org.duckietown.label.base.tag="${BASE_TAG}"
+
+# Auto source the ROS environment
+RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /etc/bash.bashrc \
+    && echo "source ${CATKIN_WS_DIR}/devel/setup.bash" >> /etc/bash.bashrc
+
 # <== Do not change the code above this line
 # <==================================================
