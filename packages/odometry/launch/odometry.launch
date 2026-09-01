@@ -1,0 +1,15 @@
+<launch>
+    <!-- test:=true  will play fake wheel tick data -->
+    <arg name="test" default="false"/>
+    <arg name="veh" default="$(optenv VEHICLE_NAME duckiebot)"/>
+
+    <arg name="ns" value="odometry_test" if="$(arg test)"/>
+    <arg name="ns" value="$(arg veh)" unless="$(arg test)"/>
+
+    <group ns="$(arg ns)">
+        <!-- TODO add Your node to do Duckiebot odometry calculations -->
+        
+        <node name="odom_graph" pkg="odometry" type="odom_graph.py" output="screen"/>
+        <node name="odom_test_pub" pkg="odometry" type="odom_test_pub.py" output="screen" if="$(arg test)"/>
+    </group>
+</launch>
