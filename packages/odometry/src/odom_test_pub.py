@@ -2,7 +2,7 @@
 
 import rospy
 import numpy as np
-from odometry.msg import WheelTicks
+from duckietown_msgs.msg import WheelEncoderStamped
 
 def pattern_generator(i):
     if i < 2:
@@ -44,28 +44,49 @@ def pattern_generator(i):
         
     return (0,0)
 
+def make_msg(ticks, resolution):
+    """Build a WheelEncoderStamped just like a Duckiebot's wheel encoder node does:
+    'data' is the rolling (cumulative) tick count, not the ticks since last message."""
+    msg = WheelEncoderStamped()
+    msg.header.stamp = rospy.Time.now()
+    msg.data = ticks
+    msg.resolution = resolution
+    msg.type = WheelEncoderStamped.ENCODER_TYPE_INCREMENTAL
+    return msg
+
 if __name__ == "__main__":
     rospy.init_node('wheel_tick_pub', anonymous=True)
-    pub = rospy.Publisher("dist_wheel", WheelTicks, queue_size=10)
+    left_pub = rospy.Publisher("left_wheel_encoder_driver_node/tick", WheelEncoderStamped, queue_size=10)
+    right_pub = rospy.Publisher("right_wheel_encoder_driver_node/tick", WheelEncoderStamped, queue_size=10)
     rate = rospy.Rate(10) # 10hz
     R = 0.0318
-    alpha = alpha = 2 * np.pi / 135
+    N_TOTAL = 135 # encoder resolution, ticks per full wheel revolution
+    alpha = 2 * np.pi / N_TOTAL
+
+    # rolling tick counters, as reported by the wheel encoders
+    ticks_left = 0
+    ticks_right = 0
+    # distance already accounted for by the published tick counts is
+    # tracked separately so that fractional ticks are not thrown away
+    dist_left_total = 0.0
+    dist_right_total = 0.0
 
     for i in range(50):
-        pub.publish(WheelTicks(0,0))
+        left_pub.publish(make_msg(ticks_left, N_TOTAL))
+        right_pub.publish(make_msg(ticks_right, N_TOTAL))
         if rospy.is_shutdown():
             break
         rate.sleep()
 
     for i in range(160):
         dist_left,dist_right = pattern_generator(i)
-        ticks_left = (dist_left/R)/alpha
-        ticks_right = (dist_right/R)/alpha
-        rospy.logwarn("left: %f right: %f" % (ticks_left,ticks_right))
-        ticks = WheelTicks()
-        ticks.wheel_ticks_left = ticks_left
-        ticks.wheel_ticks_right = ticks_right
-        pub.publish(ticks)
+        dist_left_total += dist_left
+        dist_right_total += dist_right
+        ticks_left = int(dist_left_total / (R * alpha))
+        ticks_right = int(dist_right_total / (R * alpha))
+        rospy.logwarn("left: %d right: %d" % (ticks_left,ticks_right))
+        left_pub.publish(make_msg(ticks_left, N_TOTAL))
+        right_pub.publish(make_msg(ticks_right, N_TOTAL))
         if rospy.is_shutdown():
             break
         rate.sleep()

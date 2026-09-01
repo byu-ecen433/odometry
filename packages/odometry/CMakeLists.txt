@@ -8,6 +8,7 @@ project(odometry)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  duckietown_msgs
   geometry_msgs
   rospy
   std_msgs
@@ -107,7 +108,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES odometry
-CATKIN_DEPENDS geometry_msgs rospy std_msgs message_runtime
+CATKIN_DEPENDS duckietown_msgs geometry_msgs rospy std_msgs message_runtime
 #  DEPENDS system_lib
 )
 
