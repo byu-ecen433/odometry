@@ -1,0 +1,7 @@
+<launch>
+    <group ns="odometry_test">
+        <!-- Your node to calculate odometry -->
+        <node name="odom_test_pub" pkg="odometry" type="odom_test_pub.py"/>
+        <node name="odom_graph" pkg="odometry" type="odom_graph.py"/>
+    </group>
+</launch>

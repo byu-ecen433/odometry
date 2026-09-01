@@ -1,0 +1,4 @@
+<launch>
+    <node name="odom_graph" pkg="odometry" type="odom_graph.py"/>
+    <!-- Your node to do Duckiebot odometry calculations -->
+</launch>
