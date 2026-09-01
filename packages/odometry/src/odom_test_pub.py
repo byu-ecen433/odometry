@@ -82,8 +82,8 @@ def make_msg(ticks, resolution):
 
 if __name__ == "__main__":
     rospy.init_node('wheel_tick_pub', anonymous=True)
-    left_pub = rospy.Publisher("left_wheel_encoder_node/tick", WheelEncoderStamped, queue_size=10)
-    right_pub = rospy.Publisher("right_wheel_encoder_node/tick", WheelEncoderStamped, queue_size=10)
+    left_pub = rospy.Publisher("left_wheel_encoder_driver_node/tick", WheelEncoderStamped, queue_size=10)
+    right_pub = rospy.Publisher("right_wheel_encoder_driver_node/tick", WheelEncoderStamped, queue_size=10)
     rate = rospy.Rate(10) # 10hz
     R = 0.0318
     N_TOTAL = 135 # encoder resolution, ticks per full wheel revolution
